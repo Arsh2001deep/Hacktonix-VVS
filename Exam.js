@@ -79,6 +79,11 @@ let list = [
     { question: 'Where was the electricity supply first introduced in India –', opt1: 'Mumbai', opt2: 'Dehradun', opt3: 'Darjeeling', opt4: 'Chennai' }
 ]
 
+let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
+if(question1===1){
+    document.getElementById('prev').setAttribute('disabled','');
+}
+
 let para = document.getElementById('para');
 let radio1 = document.getElementById('radio1');
 let radio2 = document.getElementById('radio2');
@@ -90,18 +95,95 @@ let box2 = document.getElementById('box2');
 let time = document.getElementById('time');
 let visited = 0;
 
-const timeFunction = () => {
-    var countDownDate = (new Date().getTime()) / 1000 + 7200;
-    console.log(countDownDate);
+document.getElementById('prev').addEventListener('click',()=>{
+    let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
+    
+    if(question1>1){
+    document.getElementById('question').innerText = `Question:${question1-1}`
+    para.innerText = list[question1-2].question;
+    radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1-2].opt1}">${list[question1-2].opt1}`;
+    console.log(radio1);
 
+    radio2.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1-2].opt2}">${list[question1-2].opt2}`;
+
+    radio3.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1-2].opt3}">${list[question1-2].opt3}`;
+
+    radio4.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1-2].opt4}">${list[question1-2].opt4}`;
+    }
+    if(question1==1){
+        document.getElementById('prev').setAttribute('disabled','');
+    }
+})
+
+document.getElementById('next').addEventListener('click',()=>{
+    let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
+    document.getElementById('prev').removeAttribute('disabled');
+    if(question1<15){
+    document.getElementById('question').innerText = `Question:${question1+1}`
+    para.innerText = list[question1].question;
+    radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1-1].opt1}">${list[question1].opt1}`;
+    console.log(radio1);
+
+    radio2.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt2}">${list[question1].opt2}`;
+
+    radio3.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt3}">${list[question1].opt3}`;
+
+    radio4.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt4}">${list[question1].opt4}`;
+    }
+    if(question1>=15){
+        document.getElementById('next').setAttribute('disabled','');
+    }
+})
+
+document.getElementById('save').addEventListener('click', () => {
+    let question1 = document.getElementById('question').innerText.slice(9, 11);
+    console.log(question1);
+    if(parseInt(question1) == 1) {
+        document.getElementById('prev').setAttribute('disabled', '');
+    }
+    if(parseInt(question1)>=1){
+        document.getElementById('prev').removeAttribute('disabled');
+    }
+    para.innerText = list[question1].question;
+    radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt1}">${list[question1].opt1}`;
+    console.log(radio1);
+
+    radio2.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt2}">${list[question1].opt2}`;
+
+    radio3.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt3}">${list[question1].opt3}`;
+
+    radio4.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt4}">${list[question1].opt4}`;
+    let value = document.getElementById('question');
+    value.innerText = `Question:${parseInt(question1) + 1}`;
+    if(parseInt(question1) + 1 === 15) {
+        document.getElementById('save').innerText = 'Save and Submit';
+        document.getElementById('next').setAttribute('disabled','');
+    }
+   
+})  
+
+const timeFunction = () => {
+    let year = new Date().getFullYear();
+    let month = new Date().getMonth();
+    let date = new Date().getDate();
+
+    let minutes = new Date().getMinutes();
+    let seconds = new Date().getSeconds();
+    
+    let hour = new Date().getHours();
+    var countDownDate = new Date(`${month}-${date}-${year} ${parseInt(hour)+2}:${minutes}:${seconds}`);
+    countDownDate.setHours(hour+2);
+    countDownDate = countDownDate.getTime();
+    
     // Update the count down every 1 second
     var x = setInterval(function () {
-
+        
         // Get today's date and time
         var now = new Date().getTime();
-
+        
         // Find the distance between now and the count down date
         var distance = countDownDate - now;
+        console.log(distance);
 
         // Time calculations for days, hours, minutes and seconds
         var days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -121,7 +203,7 @@ const timeFunction = () => {
     }, 1000);
 }
 
-timeFunction();
+// timeFunction();
 
 
 Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
@@ -141,6 +223,24 @@ Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
         radio4.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[element.innerText - 1].opt4}">${list[element.innerText - 1].opt4}`;
 
         element.style.backgroundColor = 'red';
+        let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
+        console.log(question1);
+        if(question1>1){
+            document.getElementById('prev').removeAttribute('disabled');
+        }
+        if(question1 === 15) {
+            document.getElementById('save').innerText = 'Save and Submit';
+            document.getElementById('next').setAttribute('disabled','');
+        }
+        else {
+            document.getElementById('save').innerText = 'Save and Continue';
+        }
+        if(question1<15){
+            document.getElementById('next').removeAttribute('disabled');
+        }
+        if(question1===1){
+            document.getElementById('prev').setAttribute('disabled','');
+        }
     })
 })
 
