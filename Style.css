@@ -24,8 +24,13 @@
   height: 10%;
   width: 100%;
   background-color: cadetblue;
-  margin-left: auto;
-  margin-right: auto;
+  /* margin-left: auto; */
+  /* margin-right: auto; */
+  padding: 20px 10px;
+  color:white;
+  display: flex;
+  justify-content: space-around;
+  font-size: 20px;
 }
 
 .box2 {
@@ -52,13 +57,14 @@
 }
 
 .container2 {
-  height: 70%;
+  height: 50vh;
   width: 100%;
   background-color: darkkhaki;
 }
 
 .container3 {
-  height: 20%;
+  margin: 0vh 0px;
+  height: 10vh;
   width: 100%;
   background-color: rgb(87, 82, 4);
 }
