@@ -3,6 +3,8 @@ let name1;
 let email;
 let password;
 
+
+
 document.getElementById('signup').addEventListener('click', () => {
     location.href = 'http://127.0.0.1:5500/Signup.html';
 })
