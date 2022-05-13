@@ -4,20 +4,24 @@ let name1;
 let email;
 let password;
 
+// ! name text space value is fetched  
 document.getElementById('name').addEventListener('input', (e) => {
     name1 = e.target.value;
     console.log(name1);
 });
 
+// ! email text space value is fetched  
 document.getElementById('email').addEventListener('input', (e) => {
     email = e.target.value;
     console.log(email);
 });
+
+// ! password text space value is fetched  
 document.getElementById('password').addEventListener('input', (e) => {
     password = e.target.value;
 });
 
-
+// !  submit button is listened.
 document.getElementById('submit').addEventListener('click',async (e) => {
     e.preventDefault();
     const response = await fetch("http://localhost:3000/api/auth/createuser", {

@@ -9,21 +9,21 @@
 .area1 {
   height: 100vh;
   width: 20%;
-  background-color: darkgrey;
+  background-color: #77bbac;
   float: left;
 }
 
 .area2 {
   height: 100vh;
   width: 80%;
-  background-color: darkolivegreen;
+  background-color: blanchedalmond;
   float: right;
 }
 
 .box1 {
   height: 10%;
   width: 100%;
-  background-color: cadetblue;
+  background-color: blanchedalmond;
   /* margin-left: auto; */
   /* margin-right: auto; */
   padding: 20px 10px;
@@ -43,36 +43,37 @@
 
 .container {
   height: 90%;
-  width: 90%;
-  background-color: rgb(218, 136, 15);
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 40px;
+  width: 100%;
+  background-color: blanchedalmond;
+  /* margin-left: 10px; */
+  /* margin-right: auto; */
+  margin: 0px auto 0px auto;
+  /* margin-top: 40px; */
 }
 
 .container1 {
   height: 10%;
-  width: 100%;
-  background-color: cornflowerblue;
+  width: 77vw;
+  background-color: #6169e9;
 }
 
 .container2 {
   height: 50vh;
-  width: 100%;
-  background-color: darkkhaki;
+  width: 77vw;
+  background-color: white;
 }
 
 .container3 {
   margin: 0vh 0px;
   height: 10vh;
-  width: 100%;
-  background-color: rgb(87, 82, 4);
+  width: 77vw;
+  background-color: #6169e9;
 }
 
 .space {
   height: 30%;
   width: 100%;
-  background-color: coral;
+  background-color: #77bbac;
 }
 
 .button {
@@ -130,4 +131,10 @@ body {
 
 .pagination a:hover:not(.active) {
   background-color: #ddd;
+}
+
+.color :hover{
+  background-color: red;
+  size: 100px;
+  
 }

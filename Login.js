@@ -4,20 +4,23 @@ let email;
 let password;
 
 
-
+// !signup button listening 
 document.getElementById('signup').addEventListener('click', () => {
     location.href = 'http://127.0.0.1:5500/Signup.html';
 })
 
+// ! email text space value is fetched
 document.getElementById('email').addEventListener('input', (e) => {
     email = e.target.value;
     console.log(email);
 });
+
+// ! password text space value is fetched
 document.getElementById('password').addEventListener('input', (e) => {
     password = e.target.value;
 });
 
-
+// ! Submit button is listened
 document.getElementById('submit').addEventListener('click',async (e) => {
     e.preventDefault();
     const response = await fetch("http://localhost:3000/api/auth/login", {

@@ -1,3 +1,6 @@
+// ! video Model starts
+let warningCount = 0;
+
 const URL = "";
 
 let model, webcam, labelContainer, maxPredictions;
@@ -34,12 +37,119 @@ async function predict() {
     for(let i = 0; i < maxPredictions; i++) {
         const classPrediction =
             prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        // console.log(classPrediction[1]);
+        // console.log(classPrediction);
+        // console.log(prediction[i].probability.toFixed(2));
+        if(prediction[0].probability.toFixed(2) >= 0.90) {
+            document.getElementById('container1').innerHTML = `
+        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+        <strong>Warning:</strong> Your face is not visible
+      </div>`;
+            setTimeout(() => {
+                document.getElementById('alert').style.opacity = 0;
+
+            }, 5000)
+        }
+
+    //      if(prediction[1].probability.toFixed(2) >= 0.90) {
+    //         document.getElementById('container1').innerHTML = `
+    //     <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+    //     </div>
+    //     <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+    //     <strong>Warning:</strong> Your hands are not visible
+    //   </div>`;
+    //         setTimeout(() => {
+    //             document.getElementById('alert').style.opacity = 0;
+
+    //         }, 5000)
+    //     }
     }
 }
-window.onload = () => {
-    init();
-}
 
+
+// ! Audio model starts
+
+    // more documentation available at
+    // https://github.com/tensorflow/tfjs-models/tree/master/speech-commands
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL_Audio = "https://teachablemachine.withgoogle.com/models/VYSX1Z1Wk/";
+
+    async function createModel() {
+        const checkpointURL = URL_Audio + "model.json"; // model topology
+        const metadataURL = URL_Audio +  "metadata.json"; // model metadata
+
+        const recognizer = speechCommands.create(
+            "BROWSER_FFT", // fourier transform type, not useful to change
+            undefined, // speech commands vocabulary feature, not useful for your models
+            checkpointURL,
+            metadataURL);
+
+        // check that model and metadata are loaded via HTTPS requests.
+        await recognizer.ensureModelLoaded();
+
+        return recognizer;
+    }
+
+    async function initAudio() {
+        const recognizer = await createModel();
+        const classLabels = recognizer.wordLabels(); // get class labels
+        const labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < classLabels.length; i++) {
+            labelContainer.appendChild(document.createElement("div"));
+        }
+
+        // listen() takes two arguments:
+        // 1. A callback function that is invoked anytime a word is recognized.
+        // 2. A configuration object with adjustable fields
+        recognizer.listen(result => {
+            const scores = result.scores; // probability of prediction for each class
+            // render the probability scores per class
+            for (let i = 0; i < classLabels.length; i++) {
+                const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
+                console.log(classPrediction);
+            }
+            if(result.scores[1].toFixed(2) >= 0.70) {
+                document.getElementById('container1').innerHTML = `
+            <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+            </div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+            <strong>Warning:</strong> You are talking to someone
+          </div>`;
+                setTimeout(() => {
+                    document.getElementById('alert').style.opacity = 0;
+    
+                }, 5000)
+            }
+        }, {
+            includeSpectrogram: true, // in case listen should return result.spectrogram
+            probabilityThreshold: 0.75,
+            invokeCallbackOnNoiseAndUnknown: true,
+            overlapFactor: 0.50 // probably want between 0.5 and 0.75. More info in README
+        });
+        if(result.scores[1].toFixed(2) >= 0.70) {
+            document.getElementById('container1').innerHTML = `
+        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+        <strong>Warning:</strong> You are talking to someone
+      </div>`;
+            setTimeout(() => {
+                document.getElementById('alert').style.opacity = 0;
+
+            }, 5000)
+        }
+        
+    }
+
+    window.onload = () => {
+        initAudio();
+        init();
+    }
+
+// ! Tab change code
 document.addEventListener("visibilitychange", () => {
     if(document.visibilityState == "visible") {
         console.log("tab is active")
@@ -48,7 +158,7 @@ document.addEventListener("visibilitychange", () => {
         <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
         </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
-        <strong>Hey!</strong> Tum dhara giya hehe boi
+        <strong>Warning!</strong> Don't change your tab
       </div>`;
         setTimeout(() => {
             document.getElementById('alert').style.opacity = 0;
@@ -57,6 +167,9 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 
+// ! tab change code ends
+
+// ! questions displaying
 let list = [
     { question: 'Which one of the following river flows between Vindhyan and Satpura ranges?', opt1: 'Narmada', opt2: 'Mahanadi', opt3: 'Son', opt4: 'Netravati' },
 
@@ -105,6 +218,7 @@ let box2 = document.getElementById('box2');
 let time = document.getElementById('time');
 let visited = 0;
 
+// ! Previous button configured 
 document.getElementById('prev').addEventListener('click', () => {
     let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
 
@@ -125,6 +239,7 @@ document.getElementById('prev').addEventListener('click', () => {
     }
 })
 
+// ! Next button configured
 document.getElementById('next').addEventListener('click', () => {
     let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
     document.getElementById('prev').removeAttribute('disabled');
@@ -145,6 +260,7 @@ document.getElementById('next').addEventListener('click', () => {
     }
 })
 
+// ! Save and next button configured
 document.getElementById('save').addEventListener('click', () => {
     let question1 = document.getElementById('question').innerText.slice(9, 11);
     console.log(question1);
@@ -172,6 +288,7 @@ document.getElementById('save').addEventListener('click', () => {
 
 })
 
+// ! Timer Code
 const timeFunction = () => {
     let year = new Date().getFullYear();
     let month = new Date().getMonth() + 1;
@@ -193,7 +310,6 @@ const timeFunction = () => {
         var distance = countDownDate - now;
 
         // Time calculations for days, hours, minutes and seconds
-        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
         var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         var seconds = Math.floor((distance % (1000 * 60)) / 1000);
@@ -209,9 +325,10 @@ const timeFunction = () => {
     }, 1000);
 }
 
+// ! time function call
 timeFunction();
 
-
+// ! Question no button config code
 Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
     element.addEventListener('click', () => {
         visited++;
@@ -220,15 +337,15 @@ Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
         box2.innerText = `NotVisited:${list.length - visited}`;
         para.innerText = list[element.innerText - 1].question;
 
-        radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[element.innerText - 1].opt1}">${list[element.innerText - 1].opt1}`;
+        radio1.innerHTML = `<input type="radio" class="form-check-input"  name="optradio" value="${list[element.innerText - 1].opt1}">${list[element.innerText - 1].opt1}`;
 
-        radio2.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[element.innerText - 1].opt2}">${list[element.innerText - 1].opt2}`;
+        radio2.innerHTML = `<input type="radio" class="form-check-input"  name="optradio" value="${list[element.innerText - 1].opt2}">${list[element.innerText - 1].opt2}`;
 
-        radio3.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[element.innerText - 1].opt3}">${list[element.innerText - 1].opt3}`;
+        radio3.innerHTML = `<input type="radio" class="form-check-input"  name="optradio" value="${list[element.innerText - 1].opt3}">${list[element.innerText - 1].opt3}`;
 
-        radio4.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[element.innerText - 1].opt4}">${list[element.innerText - 1].opt4}`;
+        radio4.innerHTML = `<input type="radio" class="form-check-input"  name="optradio" value="${list[element.innerText - 1].opt4}">${list[element.innerText - 1].opt4}`;
 
-        element.style.backgroundColor = 'red';
+        element.style.backgroundColor = 'rgb(183,0,0)';
         let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
         console.log(question1);
         if(question1 > 1) {
