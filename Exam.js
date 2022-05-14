@@ -1,7 +1,7 @@
-// ! video Model starts
 let warningCount = 0;
 let question = 1;
 
+// ! video Model starts
 const URL = "";
 
 let model, webcam, labelContainer, maxPredictions;
@@ -124,24 +124,24 @@ async function predict() {
     
                 }, 5000)
             }
+            if(result.scores[1].toFixed(2) >= 0.70) {
+                document.getElementById('container1').innerHTML = `
+            <div><p id="question" style="margin: 10px 10px; color: white; width:10px; font-size:20px">Question:${question}</p>
+            </div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+            <strong>Warning:</strong> You are talking to someone
+          </div>`;
+                setTimeout(() => {
+                    document.getElementById('alert').style.opacity = 0;
+    
+                }, 5000)
+            }
         }, {
             includeSpectrogram: true, // in case listen should return result.spectrogram
-            probabilityThreshold: 0.75,
+            probabilityThreshold: 0.75, 
             invokeCallbackOnNoiseAndUnknown: true,
             overlapFactor: 0.50 // probably want between 0.5 and 0.75. More info in README
         });
-        if(result.scores[1].toFixed(2) >= 0.70) {
-            document.getElementById('container1').innerHTML = `
-        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
-        </div>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
-        <strong>Warning:</strong> You are talking to someone
-      </div>`;
-            setTimeout(() => {
-                document.getElementById('alert').style.opacity = 0;
-
-            }, 5000)
-        }
         
     }
 
@@ -156,7 +156,7 @@ document.addEventListener("visibilitychange", () => {
         console.log("tab is active")
     } else {
         document.getElementById('container1').innerHTML = `
-        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:${question}</p>
+        <div><p id="question" style="margin: 10px 10px; color: white; width:10px; font-size: 20px;">Question:${question}</p>
         </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
         <strong>Warning!</strong> Don't change your tab
@@ -371,4 +371,27 @@ Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
         }
     })
 })
+
+// ! Don't resize your tab
+window.addEventListener('resize',()=>{
+    document.getElementById('container1').innerHTML = `
+    <div><p id="question" style="margin: 10px 10px; color: white; width:10px; font-size: 20px;">Question:${question}</p>
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+    <strong>Warning!</strong> Don't resize your tab
+  </div>`;
+    setTimeout(() => {
+        document.getElementById('alert').style.opacity = 0;
+
+    }, 7000)
+})
+
+// ! disabling the keyboard
+document.onkeydown = function (e) {
+    e.preventDefault();
+    return false;
+}
+
+// ! disabling the right click
+document.addEventListener('contextmenu', event => event.preventDefault());
 

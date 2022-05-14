@@ -35,7 +35,8 @@ document.getElementById('submit').addEventListener('click',async (e) => {
     const json = await response.json();
     console.log(json);
     if(json.success == true) {
-        location.href = 'http://127.0.0.1:5500/exam.html';
+        // location.href = 'http://127.0.0.1:5500/exam.html';
+        window.open('http://127.0.0.1:5500/exam.html','_blank');
 
     }
     else {
