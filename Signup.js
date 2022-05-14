@@ -50,3 +50,16 @@ document.getElementById('submit').addEventListener('click',async (e) => {
     document.getElementById('email').value = '';
     document.getElementById('password').value = '';
 });
+
+document.getElementById('button').addEventListener('click',(e)=>{
+    let password = document.getElementById('password');
+    e.preventDefault(); 
+    if(password.type === 'password'){
+        password.type = 'text';
+        document.getElementById('button').innerText = 'Hide';
+    }
+    else{
+        password.type = 'password';
+        document.getElementById('button').innerText = 'Show';
+    }
+})

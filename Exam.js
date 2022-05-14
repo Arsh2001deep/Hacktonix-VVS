@@ -1,5 +1,6 @@
 // ! video Model starts
 let warningCount = 0;
+let question = 1;
 
 const URL = "";
 
@@ -42,7 +43,7 @@ async function predict() {
         // console.log(prediction[i].probability.toFixed(2));
         if(prediction[0].probability.toFixed(2) >= 0.90) {
             document.getElementById('container1').innerHTML = `
-        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+        <div><p id="question" style="margin: 10px 10px; color: white; width:10px;font-size: 20px;">Question:${question}</p>
         </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
         <strong>Warning:</strong> Your face is not visible
@@ -109,11 +110,11 @@ async function predict() {
             // render the probability scores per class
             for (let i = 0; i < classLabels.length; i++) {
                 const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
-                console.log(classPrediction);
+                // console.log(classPrediction);
             }
             if(result.scores[1].toFixed(2) >= 0.70) {
                 document.getElementById('container1').innerHTML = `
-            <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+            <div><p id="question" style="margin: 10px 10px; color: white; width:10px;font-size: 20px;">Question:${question}</p>
             </div>
             <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
             <strong>Warning:</strong> You are talking to someone
@@ -155,7 +156,7 @@ document.addEventListener("visibilitychange", () => {
         console.log("tab is active")
     } else {
         document.getElementById('container1').innerHTML = `
-        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
+        <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:${question}</p>
         </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
         <strong>Warning!</strong> Don't change your tab
@@ -223,7 +224,8 @@ document.getElementById('prev').addEventListener('click', () => {
     let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
 
     if(question1 > 1) {
-        document.getElementById('question').innerText = `Question:${question1 - 1}`
+        question = question1-1;
+        document.getElementById('question').innerText = `Question:${question}`
         para.innerText = list[question1 - 2].question;
         radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1 - 2].opt1}">${list[question1 - 2].opt1}`;
         console.log(radio1);
@@ -244,7 +246,8 @@ document.getElementById('next').addEventListener('click', () => {
     let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
     document.getElementById('prev').removeAttribute('disabled');
     if(question1 < 15) {
-        document.getElementById('question').innerText = `Question:${question1 + 1}`
+        question = question1+1;
+        document.getElementById('question').innerText = `Question:${question}`
         para.innerText = list[question1].question;
         radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1 - 1].opt1}">${list[question1].opt1}`;
         console.log(radio1);
@@ -280,7 +283,8 @@ document.getElementById('save').addEventListener('click', () => {
 
     radio4.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1].opt4}">${list[question1].opt4}`;
     let value = document.getElementById('question');
-    value.innerText = `Question:${parseInt(question1) + 1}`;
+    question = parseInt(question1) + 1;
+    value.innerText = `Question:${question}`;
     if(parseInt(question1) + 1 === 15) {
         document.getElementById('save').innerText = 'Save and Submit';
         document.getElementById('next').setAttribute('disabled', '');
@@ -296,8 +300,8 @@ const timeFunction = () => {
 
     let minutes = new Date().getMinutes();
     let seconds = new Date().getSeconds();
-
     let hour = new Date().getHours() + 2;
+
     var countDownDate = new Date(`${month} ${date}, ${year} ${hour}:${minutes}:${seconds}`);
 
     // Update the count down every 1 second
@@ -332,7 +336,8 @@ timeFunction();
 Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
     element.addEventListener('click', () => {
         visited++;
-        document.getElementById("question").innerText = `Question:${element.innerText}`
+        question = element.innerText;
+        document.getElementById("question").innerText = `Question:${question}`
         box1.innerText = `Visited:${visited}`;
         box2.innerText = `NotVisited:${list.length - visited}`;
         para.innerText = list[element.innerText - 1].question;
