@@ -1,5 +1,11 @@
 let warningCount = 0;
+let trigger = 0;
 let question = 1;
+
+const alertCall = ()=>{
+     document.body.innerHTML = `  <div class='jumbotron'><h2>Exam Over</h2></div>`
+    
+}
 
 // ! video Model starts
 const URL = "";
@@ -34,6 +40,7 @@ async function loop() {
 }
 
 async function predict() {
+    let trigger = 0;
     const prediction = await model.predict(webcam.canvas);
     for(let i = 0; i < maxPredictions; i++) {
         const classPrediction =
@@ -52,106 +59,114 @@ async function predict() {
                 document.getElementById('alert').style.opacity = 0;
 
             }, 5000)
+            trigger = -1;
         }
-
-    //      if(prediction[1].probability.toFixed(2) >= 0.90) {
-    //         document.getElementById('container1').innerHTML = `
-    //     <div><p id="question" style="margin: 10px 10px; color: white; width:10px">Question:1</p>
-    //     </div>
-    //     <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
-    //     <strong>Warning:</strong> Your hands are not visible
-    //   </div>`;
-    //         setTimeout(() => {
-    //             document.getElementById('alert').style.opacity = 0;
-
-    //         }, 5000)
-    //     }
     }
+    
 }
-
+if(trigger == -1) {
+    warningCount++;
+    if(warningCount==4){
+        alertCall();
+        trigger = 0;
+    }
+    console.log(warningCount);
+}
 
 // ! Audio model starts
 
-    // more documentation available at
-    // https://github.com/tensorflow/tfjs-models/tree/master/speech-commands
+// more documentation available at
+// https://github.com/tensorflow/tfjs-models/tree/master/speech-commands
 
-    // the link to your model provided by Teachable Machine export panel
-    const URL_Audio = "https://teachablemachine.withgoogle.com/models/VYSX1Z1Wk/";
+// the link to your model provided by Teachable Machine export panel
+const URL_Audio = "https://teachablemachine.withgoogle.com/models/VYSX1Z1Wk/";
 
-    async function createModel() {
-        const checkpointURL = URL_Audio + "model.json"; // model topology
-        const metadataURL = URL_Audio +  "metadata.json"; // model metadata
+async function createModel() {
+    const checkpointURL = URL_Audio + "model.json"; // model topology
+    const metadataURL = URL_Audio + "metadata.json"; // model metadata
 
-        const recognizer = speechCommands.create(
-            "BROWSER_FFT", // fourier transform type, not useful to change
-            undefined, // speech commands vocabulary feature, not useful for your models
-            checkpointURL,
-            metadataURL);
+    const recognizer = speechCommands.create(
+        "BROWSER_FFT", // fourier transform type, not useful to change
+        undefined, // speech commands vocabulary feature, not useful for your models
+        checkpointURL,
+        metadataURL);
 
-        // check that model and metadata are loaded via HTTPS requests.
-        await recognizer.ensureModelLoaded();
+    // check that model and metadata are loaded via HTTPS requests.
+    await recognizer.ensureModelLoaded();
 
-        return recognizer;
+    return recognizer;
+}
+
+async function initAudio() {
+    const recognizer = await createModel();
+    const classLabels = recognizer.wordLabels(); // get class labels
+    const labelContainer = document.getElementById("label-container");
+    for(let i = 0; i < classLabels.length; i++) {
+        labelContainer.appendChild(document.createElement("div"));
     }
 
-    async function initAudio() {
-        const recognizer = await createModel();
-        const classLabels = recognizer.wordLabels(); // get class labels
-        const labelContainer = document.getElementById("label-container");
-        for (let i = 0; i < classLabels.length; i++) {
-            labelContainer.appendChild(document.createElement("div"));
+    // listen() takes two arguments:
+    // 1. A callback function that is invoked anytime a word is recognized.
+    // 2. A configuration object with adjustable fields
+    recognizer.listen(result => {
+        let trigger = 0;
+        const scores = result.scores; // probability of prediction for each class
+        // render the probability scores per class
+        for(let i = 0; i < classLabels.length; i++) {
+            const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
+            // console.log(classPrediction);
         }
-
-        // listen() takes two arguments:
-        // 1. A callback function that is invoked anytime a word is recognized.
-        // 2. A configuration object with adjustable fields
-        recognizer.listen(result => {
-            const scores = result.scores; // probability of prediction for each class
-            // render the probability scores per class
-            for (let i = 0; i < classLabels.length; i++) {
-                const classPrediction = classLabels[i] + ": " + result.scores[i].toFixed(2);
-                // console.log(classPrediction);
-            }
-            if(result.scores[1].toFixed(2) >= 0.70) {
-                document.getElementById('container1').innerHTML = `
+        if(result.scores[1].toFixed(2) >= 0.70) {
+            document.getElementById('container1').innerHTML = `
             <div><p id="question" style="margin: 10px 10px; color: white; width:10px;font-size: 20px;">Question:${question}</p>
             </div>
             <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
             <strong>Warning:</strong> You are talking to someone
           </div>`;
-                setTimeout(() => {
-                    document.getElementById('alert').style.opacity = 0;
-    
-                }, 5000)
-            }
-            if(result.scores[1].toFixed(2) >= 0.70) {
-                document.getElementById('container1').innerHTML = `
+            setTimeout(() => {
+                document.getElementById('alert').style.opacity = 0;
+
+            }, 5000)
+            trigger = -1;
+        }
+        if(result.scores[1].toFixed(2) >= 0.70) {
+            document.getElementById('container1').innerHTML = `
             <div><p id="question" style="margin: 10px 10px; color: white; width:10px; font-size:20px">Question:${question}</p>
             </div>
             <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
             <strong>Warning:</strong> You are talking to someone
           </div>`;
-                setTimeout(() => {
-                    document.getElementById('alert').style.opacity = 0;
-    
-                }, 5000)
-            }
-        }, {
-            includeSpectrogram: true, // in case listen should return result.spectrogram
-            probabilityThreshold: 0.75, 
-            invokeCallbackOnNoiseAndUnknown: true,
-            overlapFactor: 0.50 // probably want between 0.5 and 0.75. More info in README
-        });
-        
-    }
+            setTimeout(() => {
+                document.getElementById('alert').style.opacity = 0;
 
-    window.onload = () => {
-        initAudio();
-        init();
-    }
+            }, 5000)
+            trigger = -1;
+        }
+        if(trigger == -1) {
+            warningCount++;
+            if(warningCount==4){
+                alertCall();
+                trigger =0;
+            }
+            console.log(warningCount);
+        }
+    }, {
+        includeSpectrogram: true, // in case listen should return result.spectrogram
+        probabilityThreshold: 0.75,
+        invokeCallbackOnNoiseAndUnknown: true,
+        overlapFactor: 0.50 // probably want between 0.5 and 0.75. More info in README
+    });
+
+}
+
+window.onload = () => {
+    initAudio();
+    init();
+}
 
 // ! Tab change code
 document.addEventListener("visibilitychange", () => {
+    let trigger = 0;
     if(document.visibilityState == "visible") {
         console.log("tab is active")
     } else {
@@ -161,10 +176,20 @@ document.addEventListener("visibilitychange", () => {
         <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
         <strong>Warning!</strong> Don't change your tab
       </div>`;
+        trigger = -1;
         setTimeout(() => {
             document.getElementById('alert').style.opacity = 0;
 
         }, 5000)
+        
+    }
+    if(trigger == -1) {
+        warningCount++;
+        if(warningCount==4){
+            alertCall();
+            trigger =0;
+        }
+        console.log(warningCount);
     }
 });
 
@@ -224,7 +249,7 @@ document.getElementById('prev').addEventListener('click', () => {
     let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
 
     if(question1 > 1) {
-        question = question1-1;
+        question = question1 - 1;
         document.getElementById('question').innerText = `Question:${question}`
         para.innerText = list[question1 - 2].question;
         radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1 - 2].opt1}">${list[question1 - 2].opt1}`;
@@ -246,7 +271,7 @@ document.getElementById('next').addEventListener('click', () => {
     let question1 = parseInt(document.getElementById('question').innerText.slice(9, 11));
     document.getElementById('prev').removeAttribute('disabled');
     if(question1 < 15) {
-        question = question1+1;
+        question = question1 + 1;
         document.getElementById('question').innerText = `Question:${question}`
         para.innerText = list[question1].question;
         radio1.innerHTML = `<input type="radio" class="form-check-input" name="optradio" value="${list[question1 - 1].opt1}">${list[question1].opt1}`;
@@ -300,7 +325,7 @@ const timeFunction = () => {
 
     let minutes = new Date().getMinutes();
     let seconds = new Date().getSeconds();
-    let hour = new Date().getHours() + 2;
+    let hour = new Date().getHours()+2;
 
     var countDownDate = new Date(`${month} ${date}, ${year} ${hour}:${minutes}:${seconds}`);
 
@@ -324,7 +349,8 @@ const timeFunction = () => {
         // If the count down is finished, write some text
         if(distance < 0) {
             clearInterval(x);
-            document.getElementById("time").innerText = "EXPIRED";
+            location.href = 'http://127.0.0.1:5500/none.html';
+            document.body.innerHTML = `  <div class='jumbotron'><h2>Exam Over</h2></div>`;
         }
     }, 1000);
 }
@@ -373,25 +399,36 @@ Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
 })
 
 // ! Don't resize your tab
-window.addEventListener('resize',()=>{
+window.addEventListener('resize', () => {
+    let trigger = 0;
     document.getElementById('container1').innerHTML = `
     <div><p id="question" style="margin: 10px 10px; color: white; width:10px; font-size: 20px;">Question:${question}</p>
     </div>
     <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
     <strong>Warning!</strong> Don't resize your tab
   </div>`;
+    trigger = -1;
     setTimeout(() => {
         document.getElementById('alert').style.opacity = 0;
 
     }, 7000)
+    if(trigger == -1) {
+        warningCount++;
+        if(warningCount==4){
+            alertCall();    
+            trigger =0;
+        }
+    }
 })
 
+
+
 // ! disabling the keyboard
-document.onkeydown = function (e) {
-    e.preventDefault();
-    return false;
-}
+// document.onkeydown = function (e) {
+//     e.preventDefault();
+//     return false;
+// }
 
 // ! disabling the right click
-document.addEventListener('contextmenu', event => event.preventDefault());
+// document.addEventListener('contextmenu', event => event.preventDefault());
 
