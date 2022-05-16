@@ -3,7 +3,8 @@ let trigger = 0;
 let question = 1;
 
 const alertCall = ()=>{
-     document.body.innerHTML = `  <div class='jumbotron'><h2>Exam Over</h2></div>`
+     location.href = 'http://127.0.0.1:5500/End.html'
+     window.history = 'none';
     
 }
 
@@ -66,7 +67,7 @@ async function predict() {
 }
 if(trigger == -1) {
     warningCount++;
-    if(warningCount==4){
+    if(warningCount==20){
         alertCall();
         trigger = 0;
     }
@@ -144,7 +145,7 @@ async function initAudio() {
         }
         if(trigger == -1) {
             warningCount++;
-            if(warningCount==4){
+            if(warningCount==20){
                 alertCall();
                 trigger =0;
             }
@@ -185,7 +186,7 @@ document.addEventListener("visibilitychange", () => {
     }
     if(trigger == -1) {
         warningCount++;
-        if(warningCount==4){
+        if(warningCount==20){
             alertCall();
             trigger =0;
         }
@@ -349,7 +350,7 @@ const timeFunction = () => {
         // If the count down is finished, write some text
         if(distance < 0) {
             clearInterval(x);
-            location.href = 'http://127.0.0.1:5500/none.html';
+            location.href = 'http://127.0.0.1:5500/End.html';
             document.body.innerHTML = `  <div class='jumbotron'><h2>Exam Over</h2></div>`;
         }
     }, 1000);
@@ -414,7 +415,7 @@ window.addEventListener('resize', () => {
     }, 7000)
     if(trigger == -1) {
         warningCount++;
-        if(warningCount==4){
+        if(warningCount==20){
             alertCall();    
             trigger =0;
         }
@@ -424,11 +425,11 @@ window.addEventListener('resize', () => {
 
 
 // ! disabling the keyboard
-// document.onkeydown = function (e) {
-//     e.preventDefault();
-//     return false;
-// }
+document.onkeydown = function (e) {
+    e.preventDefault();
+    return false;
+}
 
 // ! disabling the right click
-// document.addEventListener('contextmenu', event => event.preventDefault());
+document.addEventListener('contextmenu', event => event.preventDefault());
 
