@@ -2,11 +2,38 @@ let warningCount = 0;
 let trigger = 0;
 let question = 1;
 
-const alertCall = ()=>{
-     location.href = 'http://127.0.0.1:5500/End.html'
-     window.history = 'none';
-    
+const alertCall = () => {
+    location.href = 'http://127.0.0.1:5500/End.html'
+    window.history = 'none';
+
 }
+
+const width = () => {
+    let original = window.screen.width;
+    if(original != window.innerWidth) {
+        document.getElementById('container1').innerHTML = `
+        <div><p id="question" style="margin: 10px 10px; color: white; width:10px;font-size: 20px;">Question:${question}</p>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
+        <strong>Warning:</strong> Your Tab is not in full screen
+      </div>`;
+        setTimeout(() => {
+            document.getElementById('alert').style.opacity = 0;
+
+        }, 5000)
+        trigger = -1;
+    }
+    if(trigger == -1) {
+        warningCount++;
+        if(warningCount == 20) {
+            alertCall();
+            trigger = 0;
+        }
+        console.log(warningCount);
+    }
+
+}
+
 
 // ! video Model starts
 const URL = "";
@@ -63,11 +90,11 @@ async function predict() {
             trigger = -1;
         }
     }
-    
+
 }
 if(trigger == -1) {
     warningCount++;
-    if(warningCount==20){
+    if(warningCount == 20) {
         alertCall();
         trigger = 0;
     }
@@ -145,9 +172,9 @@ async function initAudio() {
         }
         if(trigger == -1) {
             warningCount++;
-            if(warningCount==20){
+            if(warningCount == 20) {
                 alertCall();
-                trigger =0;
+                trigger = 0;
             }
             console.log(warningCount);
         }
@@ -163,6 +190,7 @@ async function initAudio() {
 window.onload = () => {
     initAudio();
     init();
+    width();
 }
 
 // ! Tab change code
@@ -182,13 +210,13 @@ document.addEventListener("visibilitychange", () => {
             document.getElementById('alert').style.opacity = 0;
 
         }, 5000)
-        
+
     }
     if(trigger == -1) {
         warningCount++;
-        if(warningCount==20){
+        if(warningCount == 20) {
             alertCall();
-            trigger =0;
+            trigger = 0;
         }
         console.log(warningCount);
     }
@@ -326,7 +354,7 @@ const timeFunction = () => {
 
     let minutes = new Date().getMinutes();
     let seconds = new Date().getSeconds();
-    let hour = new Date().getHours()+2;
+    let hour = new Date().getHours() + 2;
 
     var countDownDate = new Date(`${month} ${date}, ${year} ${hour}:${minutes}:${seconds}`);
 
@@ -415,9 +443,9 @@ window.addEventListener('resize', () => {
     }, 7000)
     if(trigger == -1) {
         warningCount++;
-        if(warningCount==20){
-            alertCall();    
-            trigger =0;
+        if(warningCount == 20) {
+            alertCall();
+            trigger = 0;
         }
     }
 })
@@ -425,10 +453,10 @@ window.addEventListener('resize', () => {
 
 
 // ! disabling the keyboard
-document.onkeydown = function (e) {
-    e.preventDefault();
-    return false;
-}
+// document.onkeydown = function (e) {
+//     e.preventDefault();
+//     return false;
+// }
 
 // ! disabling the right click
 document.addEventListener('contextmenu', event => event.preventDefault());
