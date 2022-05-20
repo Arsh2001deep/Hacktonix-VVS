@@ -1,3 +1,7 @@
+body{
+  overflow: hidden;
+}
+
 .area {
   height: 650px;
   width: 100%;

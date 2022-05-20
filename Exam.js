@@ -11,27 +11,15 @@ const alertCall = () => {
 const width = () => {
     let original = window.screen.width;
     if(original != window.innerWidth) {
-        document.getElementById('container1').innerHTML = `
-        <div><p id="question" style="margin: 10px 10px; color: white; width:10px;font-size: 20px;">Question:${question}</p>
-        </div>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
-        <strong>Warning:</strong> Your Tab is not in full screen
-      </div>`;
-        setTimeout(() => {
-            document.getElementById('alert').style.opacity = 0;
-
-        }, 5000)
-        trigger = -1;
-    }
-    if(trigger == -1) {
-        warningCount++;
-        if(warningCount == 20) {
-            alertCall();
-            trigger = 0;
+        document.getElementById('save').setAttribute('disabled', '');
+        document.getElementById('change_buttons').innerHTML = '';
+        let elements = document.getElementsByClassName('btn-get');
+        for(var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            element.setAttribute('disabled', '');
         }
-        console.log(warningCount);
+        warningCount++;
     }
-
 }
 
 
@@ -429,23 +417,24 @@ Array.from(document.getElementsByClassName('btn-get')).forEach((element) => {
 
 // ! Don't resize your tab
 window.addEventListener('resize', () => {
-    let trigger = 0;
-    document.getElementById('container1').innerHTML = `
-    <div><p id="question" style="margin: 10px 10px; color: white; width:10px; font-size: 20px;">Question:${question}</p>
-    </div>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" id='alert' style="opacity:1;height:43px; margin:auto;">
-    <strong>Warning!</strong> Don't resize your tab
-  </div>`;
-    trigger = -1;
-    setTimeout(() => {
-        document.getElementById('alert').style.opacity = 0;
-
-    }, 7000)
-    if(trigger == -1) {
+    if(window.screen.width != window.innerWidth) {
+        document.getElementById('save').setAttribute('disabled', '');
+        document.getElementById('change_buttons').innerHTML = '';
+        let elements = document.getElementsByClassName('btn-get');
+        for(var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            element.setAttribute('disabled','');
+        }
         warningCount++;
-        if(warningCount == 20) {
-            alertCall();
-            trigger = 0;
+    }
+    if(window.screen.width == window.innerWidth) {
+        document.getElementById('save').removeAttribute('disabled');
+        document.getElementById('change_buttons').innerHTML = `<button class="btn btn-warning" id="prev" style="margin: 5px 5px;" disabled>❮</button>
+        <button class="btn btn-warning" id="next" style="margin: 5px 5px;">❯</button>`;
+        let elements = document.getElementsByClassName('btn-get');
+        for(var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            element.removeAttribute('disabled');
         }
     }
 })
@@ -453,10 +442,10 @@ window.addEventListener('resize', () => {
 
 
 // ! disabling the keyboard
-// document.onkeydown = function (e) {
-//     e.preventDefault();
-//     return false;
-// }
+document.onkeydown = function (e) {
+    e.preventDefault();
+    return false;
+}
 
 // ! disabling the right click
 document.addEventListener('contextmenu', event => event.preventDefault());
